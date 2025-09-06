@@ -5,24 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Language Translator</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Set Tailwind config immediately
+        tailwind.config = { 
+            darkMode: 'class',
+            theme: {
+                extend: {}
+            }
+        };
+        
+        // Wait for Tailwind to load and verify
+        setTimeout(() => {
+            if (window.tailwind) {
+                console.log('Tailwind config set:', tailwind.config);
+            } else {
+                console.log('Tailwind not available yet');
+            }
+        }, 100);
+        
+        // Force refresh after a delay
+        setTimeout(() => {
+            if (window.tailwind) {
+                window.tailwind.refresh();
+                console.log('Tailwind refreshed');
+            }
+        }, 1000);
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
+        }
+        
+        /* Force theme changes */
+        html:not(.dark) {
+            color-scheme: light;
+        }
+        
+        html.dark {
+            color-scheme: dark;
+        }
+        
+        /* Ensure dark mode classes work */
+        html.dark * {
+            color-scheme: dark;
         }
         /* Custom scrollbar for better aesthetics */
         #chat-container::-webkit-scrollbar {
             width: 8px;
         }
         #chat-container::-webkit-scrollbar-track {
-            background: #2d3748; /* gray-800 */
+            background: #fde2e8; /* rose-100 */
         }
         #chat-container::-webkit-scrollbar-thumb {
-            background: #4a5568; /* gray-600 */
+            background: #f9a8d4; /* pink-300 */
             border-radius: 10px;
         }
         #chat-container::-webkit-scrollbar-thumb:hover {
-            background: #718096; /* gray-500 */
+            background: #f472b6; /* pink-400 */
+        }
+        /* Dark mode scrollbar */
+        .dark #chat-container::-webkit-scrollbar-track {
+            background: #0b0b0b; /* near black */
+        }
+        .dark #chat-container::-webkit-scrollbar-thumb {
+            background: #db2777; /* pink-600 */
+            border-radius: 10px;
+        }
+        .dark #chat-container::-webkit-scrollbar-thumb:hover {
+            background: #ec4899; /* pink-500 */
         }
         /* Typing indicator animation */
         .typing-dot {
@@ -41,35 +92,39 @@
         }
     </style>
 </head>
-<body class="bg-gray-900 text-white flex flex-col items-center justify-center h-screen p-4">
+<body class="bg-gradient-to-br from-pink-50 via-rose-50 to-fuchsia-50 dark:bg-gradient-to-br dark:from-black dark:via-slate-900 dark:to-black text-gray-800 dark:text-gray-100 flex flex-col items-center justify-center h-screen p-4">
 
-    <div class="bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl h-full flex flex-col">
+    <div class="bg-white/80 dark:bg-slate-900/70 backdrop-blur rounded-2xl shadow-2xl w-full max-w-2xl h-full flex flex-col border border-pink-200 dark:border-pink-700">
         <!-- Header -->
-        <header class="bg-blue-600 p-4 rounded-t-2xl text-center shadow-lg">
+        <header class="relative bg-gradient-to-r from-pink-500 via-rose-500 to-fuchsia-500 dark:from-black dark:via-slate-900 dark:to-black p-4 rounded-t-2xl text-center shadow-lg text-white border-b border-transparent dark:border-pink-600">
             <h1 class="text-xl font-bold">AI Language Translator</h1>
-            <p class="text-sm text-blue-100">แปลภาษาไทย ⇔ ภาษาอังกฤษ</p>
+            <p class="text-sm text-rose-100">แปลภาษาไทย ⇔ ภาษาอังกฤษ</p>
+            <button id="theme-toggle" class="absolute right-3 top-3 bg-white/20 dark:bg-pink-600/20 hover:bg-white/30 dark:hover:bg-pink-600/30 text-white rounded-full p-2 focus:outline-none focus:ring-2 focus:ring-pink-300" aria-label="Toggle dark mode">
+                <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" viewBox="0 0 24 24" fill="currentColor"><path d="M6.995 12c0 2.761 2.246 5.005 5.005 5.005s5.005-2.244 5.005-5.005S14.761 6.995 12 6.995 6.995 9.239 6.995 12zM12 2a1 1 0 011 1v1.5a1 1 0 11-2 0V3a1 1 0 011-1zm0 17.5a1 1 0 011 1V22a1 1 0 11-2 0v-1.5a1 1 0 011-1zM3 11a1 1 0 011-1h1.5a1 1 0 110 2H4a1 1 0 01-1-1zm17.5 0a1 1 0 011 1 1 1 0 01-1 1H18a1 1 0 110-2h2.5zM5.05 5.05a1 1 0 011.414 0L8.12 6.707a1 1 0 11-1.414 1.414L5.05 6.464a1 1 0 010-1.414zm10.607 10.607a1 1 0 011.414 0l1.657 1.657a1 1 0 01-1.414 1.414l-1.657-1.657a1 1 0 010-1.414zM18.95 5.05a1 1 0 010 1.414L17.293 8.12a1 1 0 11-1.414-1.414L17.536 5.05a1 1 0 011.414 0zM7.05 16.95a1 1 0 010 1.414L5.393 20.02a1 1 0 01-1.414-1.414L5.636 16.95a1 1 0 011.414 0z"/></svg>
+                <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z"/></svg>
+            </button>
         </header>
 
         <!-- Chat Container -->
         <main id="chat-container" class="flex-1 p-6 overflow-y-auto space-y-6">
             <!-- Initial AI Welcome Message -->
             <div class="flex items-start gap-3 justify-start">
-                <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
+                <div class="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center flex-shrink-0">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
                     </svg>
                 </div>
-                <div class="bg-gray-700 rounded-lg p-4 max-w-md">
+                <div class="bg-rose-50 text-gray-800 rounded-lg p-4 max-w-md border border-pink-200 dark:bg-slate-800 dark:text-pink-100 dark:border-pink-700">
                     <p class="text-sm">สวัสดีครับ! พิมพ์ข้อความภาษาไทยเพื่อแปลเป็นภาษาอังกฤษ หรือพิมพ์ภาษาอังกฤษเพื่อแปลเป็นภาษาไทยได้เลย</p>
                 </div>
             </div>
         </main>
 
         <!-- Input Form -->
-        <footer class="p-4 border-t border-gray-700">
+        <footer class="p-4 border-t border-pink-200 dark:border-pink-700">
             <form id="chat-form" class="flex items-center gap-3">
-                <textarea id="message-input" class="flex-1 bg-gray-700 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" placeholder="พิมพ์ข้อความของคุณที่นี่..." rows="1"></textarea>
-                <button type="submit" id="send-button" class="bg-blue-600 text-white p-3 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                <textarea id="message-input" class="flex-1 bg-white/70 border border-pink-200 rounded-lg p-3 text-sm text-gray-800 placeholder-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-400 resize-none dark:bg-slate-800 dark:border-pink-700 dark:text-pink-100 dark:placeholder-pink-300 dark:focus:ring-pink-600" placeholder="พิมพ์ข้อความของคุณที่นี่..." rows="1"></textarea>
+                <button type="submit" id="send-button" class="bg-pink-500 text-white p-3 rounded-full hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-offset-2 focus:ring-offset-rose-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed dark:bg-pink-600 dark:hover:bg-pink-500 dark:focus:ring-pink-600 dark:focus:ring-offset-slate-900">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
@@ -86,7 +141,8 @@
 
         // --- Gemini API Configuration ---
         const apiKey = "AIzaSyA1EC4YnDVMJD6ETz5ek1__kaIbU2X3DIs"; // This will be handled by the environment, no key needed here.
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+        const primaryApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+        const fallbackApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
 
         const systemPrompt = `Your sole function is to act as a language translator. Analyze the user's input message. If the message is in Thai, translate it to English. If the message is in English, translate it to Thai. Provide only the translated text as your response, without any additional explanations, pleasantries, or context.`;
 
@@ -128,7 +184,7 @@
             const messageElement = document.createElement('div');
             messageElement.className = 'flex items-start gap-3 justify-end';
             messageElement.innerHTML = `
-                <div class="bg-blue-600 rounded-lg p-4 max-w-md">
+                <div class="bg-pink-500 dark:bg-pink-600 rounded-lg p-4 max-w-md">
                     <p class="text-sm text-white">${message}</p>
                 </div>
                 <div class="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center flex-shrink-0">
@@ -149,14 +205,14 @@
             const sanitizedMessage = message.replace(/`/g, '\\`').replace(/\$/g, '\\$');
 
             messageElement.innerHTML = `
-                <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
+                <div class="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center flex-shrink-0">
                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
                     </svg>
                 </div>
-                <div class="group relative bg-gray-700 rounded-lg p-4 max-w-md">
+                <div class="group relative bg-rose-50 text-gray-800 border border-pink-200 rounded-lg p-4 max-w-md dark:bg-slate-800 dark:text-pink-100 dark:border-pink-700">
                     <p id="${id}" class="text-sm whitespace-pre-wrap">${message}</p>
-                    <button onclick="copyToClipboard('${id}')" class="absolute top-2 right-2 p-1 bg-gray-600 rounded-md text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onclick="copyToClipboard('${id}')" class="absolute top-2 right-2 p-1 bg-pink-100 rounded-md text-pink-600 opacity-0 group-hover:opacity-100 transition-opacity dark:bg-slate-700 dark:text-pink-300">
                         <svg id="copy-icon-${id}" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
                         <svg id="check-icon-${id}" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
                     </button>
@@ -171,20 +227,130 @@
             loadingElement.id = 'loading-indicator';
             loadingElement.className = 'flex items-start gap-3 justify-start';
             loadingElement.innerHTML = `
-                <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
+                <div class="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center flex-shrink-0">
                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
                     </svg>
                 </div>
-                <div class="bg-gray-700 rounded-lg p-4 max-w-md flex items-center space-x-2">
-                    <div class="typing-dot h-2 w-2 bg-gray-400 rounded-full"></div>
-                    <div class="typing-dot h-2 w-2 bg-gray-400 rounded-full"></div>
-                    <div class="typing-dot h-2 w-2 bg-gray-400 rounded-full"></div>
+                <div class="bg-rose-50 rounded-lg p-4 max-w-md flex items-center space-x-2 border border-pink-200 dark:bg-slate-800 dark:border-pink-700">
+                    <div class="typing-dot h-2 w-2 bg-pink-300 dark:bg-pink-400 rounded-full"></div>
+                    <div class="typing-dot h-2 w-2 bg-pink-300 dark:bg-pink-400 rounded-full"></div>
+                    <div class="typing-dot h-2 w-2 bg-pink-300 dark:bg-pink-400 rounded-full"></div>
                 </div>
             `;
             chatContainer.appendChild(loadingElement);
             scrollToBottom();
         }
+
+        // Theme toggle logic
+        const themeToggle = document.getElementById('theme-toggle');
+        const iconSun = document.getElementById('icon-sun');
+        const iconMoon = document.getElementById('icon-moon');
+
+        function updateThemeIcon() {
+            const isDark = document.documentElement.classList.contains('dark');
+            console.log('Updating theme icon. Is dark:', isDark);
+            console.log('HTML classes:', document.documentElement.className);
+            
+            if (iconSun && iconMoon) {
+                iconSun.classList.toggle('hidden', !isDark);
+                iconMoon.classList.toggle('hidden', isDark);
+                console.log('Sun icon hidden:', iconSun.classList.contains('hidden'));
+                console.log('Moon icon hidden:', iconMoon.classList.contains('hidden'));
+            }
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            console.log('Current theme is dark:', isDark);
+            
+            if (isDark) {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+                console.log('Switched to light mode');
+            } else {
+                document.documentElement.classList.add('dark');
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                console.log('Switched to dark mode');
+            }
+            
+            // Force Tailwind to refresh
+            if (window.tailwind) {
+                window.tailwind.refresh();
+            }
+            
+            updateThemeIcon();
+        }
+
+        // Initialize theme
+        function initTheme() {
+            const stored = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            console.log('Stored theme:', stored);
+            console.log('Prefers dark:', prefersDark);
+            
+            if (stored === 'dark' || (!stored && prefersDark)) {
+                document.documentElement.classList.add('dark');
+                document.documentElement.setAttribute('data-theme', 'dark');
+                console.log('Applied dark theme');
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.setAttribute('data-theme', 'light');
+                console.log('Applied light theme');
+            }
+            
+            // Force Tailwind to refresh
+            if (window.tailwind) {
+                window.tailwind.refresh();
+            }
+            
+            updateThemeIcon();
+        }
+
+        // Initialize on page load
+        setTimeout(() => {
+            initTheme();
+        }, 1000);
+
+        // Add click listener
+        if (themeToggle) {
+            themeToggle.addEventListener('click', toggleTheme);
+        }
+        
+        // Debug: Test if dark mode classes work
+        setTimeout(() => {
+            console.log('Testing dark mode...');
+            console.log('HTML element classes:', document.documentElement.className);
+            console.log('Body element classes:', document.body.className);
+            
+            // Test if Tailwind is working
+            const testDiv = document.createElement('div');
+            testDiv.className = 'bg-white dark:bg-black text-black dark:text-white p-2';
+            testDiv.textContent = 'Test';
+            testDiv.style.position = 'fixed';
+            testDiv.style.top = '10px';
+            testDiv.style.left = '10px';
+            testDiv.style.zIndex = '9999';
+            document.body.appendChild(testDiv);
+            
+            // Check computed styles
+            const computedStyle = window.getComputedStyle(testDiv);
+            console.log('Test div background color:', computedStyle.backgroundColor);
+            console.log('Test div color:', computedStyle.color);
+            
+            // Force refresh Tailwind
+            if (window.tailwind) {
+                console.log('Tailwind is available');
+                window.tailwind.refresh();
+            }
+            
+            setTimeout(() => {
+                document.body.removeChild(testDiv);
+            }, 3000);
+        }, 800);
 
         function removeLoadingIndicator() {
             const loadingIndicator = document.getElementById('loading-indicator');
@@ -203,14 +369,26 @@
             };
 
             try {
-                const response = await fetch(apiUrl, {
+                // Attempt 1: Primary Model
+                let response = await fetch(primaryApiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
 
+                // If primary model fails, try the fallback model
                 if (!response.ok) {
-                    throw new Error(`API Error: ${response.statusText}`);
+                    console.warn(`Primary model failed with status: ${response.status}. Trying fallback model.`);
+                    response = await fetch(fallbackApiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    // If fallback also fails, throw an error to be caught by the catch block
+                    if (!response.ok) {
+                        throw new Error(`Fallback API Error: ${response.status} ${response.statusText}`);
+                    }
                 }
 
                 const result = await response.json();
